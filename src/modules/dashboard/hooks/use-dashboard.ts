@@ -48,3 +48,27 @@ export function useEgresosPlataforma() {
     staleTime: 1000 * 60 * 2,
   })
 }
+
+export function useVencimientos(params?: { status?: string; fecha_desde?: string; fecha_hasta?: string }) {
+  return useQuery({
+    queryKey: ["dashboard", "vencimientos", params],
+    queryFn: () => dashboardApi.vencimientos(params),
+    staleTime: 1000 * 60 * 2,
+  })
+}
+
+export function useInventario() {
+  return useQuery({
+    queryKey: ["dashboard", "inventario"],
+    queryFn: dashboardApi.inventario,
+    staleTime: 1000 * 60 * 5,
+  })
+}
+
+export function useClientesInactivos(dias = 30) {
+  return useQuery({
+    queryKey: ["dashboard", "clientes-inactivos", dias],
+    queryFn: () => dashboardApi.clientesInactivos(dias),
+    staleTime: 1000 * 60 * 5,
+  })
+}

@@ -52,6 +52,49 @@ export interface EgresoPorPlataforma {
   count: number
 }
 
+export interface Vencimiento {
+  orden_id: number
+  cliente: string
+  telefono: string | null
+  fecha_cobro: string | null
+  fecha_corte: string | null
+  status: string
+  plataformas: string[]
+  items_count: number
+}
+
+export interface InventarioPlataforma {
+  plataforma: string
+  total: number
+  disponibles: number
+  activas: number
+  por_vencer: number
+  vencidas: number
+  caidas: number
+}
+
+export interface Inventario {
+  cuentas: InventarioPlataforma[]
+  totales: {
+    total: number
+    disponibles: number
+    activas: number
+    por_vencer: number
+    vencidas: number
+    caidas: number
+  }
+}
+
+export interface ClienteInactivo {
+  cliente_id: number
+  nombre: string
+  telefono: string
+  ultima_compra: string | null
+  dias_sin_compra: number | null
+  total_compras: number
+  total_gastado: number
+}
+
 // ─── API functions ───────────────────────────────
 
 export const dashboardApi = {
@@ -72,4 +115,13 @@ export const dashboardApi = {
 
   egresosPlataforma: () =>
     api.get<EgresoPorPlataforma[]>("/dashboard/egresos/plataforma/").then((r) => r.data),
+
+  vencimientos: (params?: { status?: string; fecha_desde?: string; fecha_hasta?: string }) =>
+    api.get<Vencimiento[]>("/dashboard/vencimientos/", { params }).then((r) => r.data),
+
+  inventario: () =>
+    api.get<Inventario>("/dashboard/inventario/").then((r) => r.data),
+
+  clientesInactivos: (dias = 30) =>
+    api.get<ClienteInactivo[]>("/dashboard/clientes-inactivos/", { params: { dias } }).then((r) => r.data),
 }

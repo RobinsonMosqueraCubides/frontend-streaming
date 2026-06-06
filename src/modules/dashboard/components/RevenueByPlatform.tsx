@@ -3,7 +3,6 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { useIngresosPlataforma } from "../hooks/use-dashboard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PriceDisplay } from "@/components/price-display"
-import { PLATFORM_COLORS } from "@/lib/constants"
 
 export function RevenueByPlatform() {
   const { data, isLoading } = useIngresosPlataforma()

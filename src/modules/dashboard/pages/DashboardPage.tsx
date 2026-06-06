@@ -1,9 +1,10 @@
 import { useDashboardResumen } from "../hooks/use-dashboard"
 import { KpiCards } from "../components/KpiCards"
 import { RevenueByPlatform } from "../components/RevenueByPlatform"
-import { ExpensesByProvider } from "../components/ExpensesByProvider"
+import { InventorySummary } from "../components/InventorySummary"
 import { StatusChart } from "../components/StatusChart"
 import { ExpiringSoon } from "../components/ExpiringSoon"
+import { InactiveClients } from "../components/InactiveClients"
 import { useAccounts } from "@/modules/accounts/hooks/use-accounts"
 import { useScreens } from "@/modules/screens/hooks/use-screens"
 import { Zap } from "lucide-react"
@@ -52,13 +53,13 @@ export function DashboardPage() {
       {/* KPI Cards */}
       <KpiCards />
 
-      {/* Charts row 1 */}
+      {/* Row 1: Revenue + Inventory */}
       <div className="grid gap-6 lg:grid-cols-2">
         <RevenueByPlatform />
-        <ExpensesByProvider />
+        <InventorySummary />
       </div>
 
-      {/* Charts row 2 */}
+      {/* Row 2: Status chart + Expiring soon */}
       <div className="grid gap-6 lg:grid-cols-2">
         <StatusChart
           data={buildStatusData()}
@@ -66,6 +67,9 @@ export function DashboardPage() {
         />
         <ExpiringSoon />
       </div>
+
+      {/* Row 3: Inactive clients (full width) */}
+      <InactiveClients />
     </div>
   )
 }
