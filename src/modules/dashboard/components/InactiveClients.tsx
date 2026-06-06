@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge"
 import { UserX, Phone, ShoppingCart, DollarSign } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useClientesInactivos } from "../hooks/use-dashboard"
+import { LoyaltyHighlight } from "@/components/loyalty-highlight"
+import { LoyaltyBadge } from "@/components/loyalty-badge"
 import {
   Select,
   SelectContent,
@@ -95,47 +97,51 @@ export function InactiveClients() {
         ) : (
           <div className="space-y-2">
             {items.slice(0, 10).map((cliente) => (
-              <div
-                key={cliente.cliente_id}
-                className="flex items-center gap-3 rounded-lg border border-border p-3 hover:bg-muted/50 transition-colors"
-              >
-                {/* Avatar */}
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">
-                  {getInitials(cliente.nombre)}
-                </div>
+              <LoyaltyHighlight key={cliente.cliente_id} clienteId={cliente.cliente_id}>
+                <div
+                  className="flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors"
+                >
+                  {/* Avatar */}
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">
+                    {getInitials(cliente.nombre)}
+                  </div>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">
-                    {cliente.nombre}
-                  </p>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    {cliente.telefono && (
-                      <span className="flex items-center gap-1">
-                        <Phone className="h-3 w-3" />
-                        {cliente.telefono}
-                      </span>
-                    )}
-                    {cliente.dias_sin_compra !== null && (
-                      <span className="text-status-por-vencer font-medium">
-                        {cliente.dias_sin_compra} días sin compra
-                      </span>
-                    )}
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium truncate">
+                        {cliente.nombre}
+                      </p>
+                      <LoyaltyBadge clienteId={cliente.cliente_id} />
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      {cliente.telefono && (
+                        <span className="flex items-center gap-1">
+                          <Phone className="h-3 w-3" />
+                          {cliente.telefono}
+                        </span>
+                      )}
+                      {cliente.dias_sin_compra !== null && (
+                        <span className="text-status-por-vencer font-medium">
+                          {cliente.dias_sin_compra} días sin compra
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="hidden sm:flex items-center gap-3 text-xs shrink-0">
+                    <span className="flex items-center gap-1 text-muted-foreground">
+                      <ShoppingCart className="h-3 w-3" />
+                      {cliente.total_compras}
+                    </span>
+                    <span className="flex items-center gap-1 text-muted-foreground">
+                      <DollarSign className="h-3 w-3" />
+                      {formatCOP(cliente.total_gastado)}
+                    </span>
                   </div>
                 </div>
-
-                {/* Stats */}
-                <div className="hidden sm:flex items-center gap-3 text-xs shrink-0">
-                  <span className="flex items-center gap-1 text-muted-foreground">
-                    <ShoppingCart className="h-3 w-3" />
-                    {cliente.total_compras}
-                  </span>
-                  <span className="flex items-center gap-1 text-muted-foreground">
-                    <DollarSign className="h-3 w-3" />
-                    {formatCOP(cliente.total_gastado)}
-                  </span>
-                </div>
-              </div>
+              </LoyaltyHighlight>
             ))}
             {items.length > 10 && (
               <p className="text-center text-xs text-muted-foreground pt-2">

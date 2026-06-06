@@ -46,6 +46,10 @@
   --color-warning: #F59E0B;
   --color-warning-foreground: #FFFFFF;
 
+  /* Loyalty (dorado) */
+  --color-loyalty: #F59E0B;
+  --color-loyalty-foreground: #FFFFFF;
+
   /* Border & Input */
   --color-border: #DDD0F8;
   --color-input: #DDD0F8;
@@ -93,6 +97,11 @@
   --color-success-foreground: #FFFFFF;
   --color-warning: #FBBF24;
   --color-warning-foreground: #0F0B1A;
+
+  /* Loyalty (dorado) */
+  --color-loyalty: #FBBF24;
+  --color-loyalty-foreground: #0F0B1A;
+
   --color-border: #2D2840;
   --color-input: #2D2840;
   --color-ring: #A78BFA;
@@ -134,6 +143,8 @@
   --color-success-foreground: var(--color-success-foreground);
   --color-warning: var(--color-warning);
   --color-warning-foreground: var(--color-warning-foreground);
+  --color-loyalty: var(--color-loyalty);
+  --color-loyalty-foreground: var(--color-loyalty-foreground);
   --color-border: var(--color-border);
   --color-input: var(--color-input);
   --color-ring: var(--color-ring);

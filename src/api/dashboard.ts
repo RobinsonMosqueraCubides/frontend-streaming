@@ -54,6 +54,7 @@ export interface EgresoPorPlataforma {
 
 export interface Vencimiento {
   orden_id: number
+  customer_id: number
   cliente: string
   telefono: string | null
   fecha_cobro: string | null
@@ -124,4 +125,7 @@ export const dashboardApi = {
 
   clientesInactivos: (dias = 30) =>
     api.get<ClienteInactivo[]>("/dashboard/clientes-inactivos/", { params: { dias } }).then((r) => r.data),
+
+  clientesAntiguos: () =>
+    api.get<number[]>("/dashboard/clientes-antiguos/").then((r) => r.data),
 }

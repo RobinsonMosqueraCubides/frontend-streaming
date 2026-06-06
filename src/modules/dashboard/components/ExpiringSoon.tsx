@@ -9,6 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useVencimientos } from "../hooks/use-dashboard"
 import { Button } from "@/components/ui/button"
 import type { OrderStatus } from "@/lib/constants"
+import { LoyaltyHighlight } from "@/components/loyalty-highlight"
+import { LoyaltyBadge } from "@/components/loyalty-badge"
 import {
   Select,
   SelectContent,
@@ -121,52 +123,54 @@ export function ExpiringSoon() {
         ) : (
           <div className="space-y-2">
             {items.slice(0, 10).map((item) => (
-              <div
-                key={item.orden_id}
-                className="flex items-center gap-3 rounded-lg border border-border p-3 hover:bg-muted/50 transition-colors"
-              >
-                <PlatformIcon
-                  name={item.plataformas[0] ?? "N/A"}
-                  size="sm"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium truncate">
-                      {item.cliente}
-                    </p>
-                    {item.items_count > 1 && (
-                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                        {item.items_count} items
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    {item.plataformas.length > 0 && (
-                      <span className="truncate">
-                        {item.plataformas.join(", ")}
-                      </span>
-                    )}
-                    {item.telefono && (
-                      <span className="flex items-center gap-1 shrink-0">
-                        <Phone className="h-3 w-3" />
-                        {item.telefono}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="hidden sm:flex flex-col items-end gap-0.5 shrink-0">
-                  <DateDisplay
-                    date={item.fecha_cobro}
-                    showRelative={false}
-                    className="text-xs text-muted-foreground"
+              <LoyaltyHighlight key={item.orden_id} clienteId={item.customer_id}>
+                <div
+                  className="flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors"
+                >
+                  <PlatformIcon
+                    name={item.plataformas[0] ?? "N/A"}
+                    size="sm"
                   />
-                  <DateDisplay
-                    date={item.fecha_corte}
-                    className="text-xs font-medium"
-                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium truncate">
+                        {item.cliente}
+                      </p>
+                      <LoyaltyBadge clienteId={item.customer_id} />
+                      {item.items_count > 1 && (
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                          {item.items_count} items
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      {item.plataformas.length > 0 && (
+                        <span className="truncate">
+                          {item.plataformas.join(", ")}
+                        </span>
+                      )}
+                      {item.telefono && (
+                        <span className="flex items-center gap-1 shrink-0">
+                          <Phone className="h-3 w-3" />
+                          {item.telefono}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="hidden sm:flex flex-col items-end gap-0.5 shrink-0">
+                    <DateDisplay
+                      date={item.fecha_cobro}
+                      showRelative={false}
+                      className="text-xs text-muted-foreground"
+                    />
+                    <DateDisplay
+                      date={item.fecha_corte}
+                      className="text-xs font-medium"
+                    />
+                  </div>
+                  <StatusBadge status={item.status as OrderStatus} />
                 </div>
-                <StatusBadge status={item.status as OrderStatus} />
-              </div>
+              </LoyaltyHighlight>
             ))}
             {items.length > 10 && (
               <p className="text-center text-xs text-muted-foreground pt-2">

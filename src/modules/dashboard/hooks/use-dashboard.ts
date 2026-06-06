@@ -72,3 +72,11 @@ export function useClientesInactivos(dias = 30) {
     staleTime: 1000 * 60 * 5,
   })
 }
+
+export function useClientesAntiguos() {
+  return useQuery({
+    queryKey: ["dashboard", "clientes-antiguos"],
+    queryFn: dashboardApi.clientesAntiguos,
+    staleTime: 1000 * 60 * 10,
+  })
+}
