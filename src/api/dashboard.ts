@@ -94,6 +94,8 @@ export interface ClienteInactivo {
   dias_sin_compra: number | null
   total_compras: number
   total_gastado: number
+  plataformas: string[]
+  ultima_plataforma: string | null
 }
 
 // ─── API functions ───────────────────────────────

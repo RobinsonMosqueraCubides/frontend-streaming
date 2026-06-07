@@ -1,11 +1,13 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { UserX, Phone, ShoppingCart, DollarSign } from "lucide-react"
+import { UserX, Phone, ShoppingCart, DollarSign, Clock } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useClientesInactivos } from "../hooks/use-dashboard"
 import { LoyaltyHighlight } from "@/components/loyalty-highlight"
 import { LoyaltyBadge } from "@/components/loyalty-badge"
+import { PlatformIcon } from "@/components/platform-icon"
+import { DateDisplay } from "@/components/date-display"
 import {
   Select,
   SelectContent,
@@ -32,6 +34,21 @@ function getInitials(name: string): string {
     .toUpperCase()
 }
 
+function formatDiasSinCompra(dias: number | null): string {
+  if (dias === null) return ""
+  if (dias === 0) return "Hoy"
+  if (dias === 1) return "Ayer"
+  if (dias < 30) return `Hace ${dias} días`
+  if (dias < 365) {
+    const meses = Math.floor(dias / 30)
+    return `Hace ${meses} mes${meses > 1 ? "es" : ""}`
+  }
+  const anios = Math.floor(dias / 365)
+  const mesesRestantes = Math.floor((dias % 365) / 30)
+  if (mesesRestantes === 0) return `Hace ${anios} año${anios > 1 ? "s" : ""}`
+  return `Hace ${anios} año${anios > 1 ? "s" : ""} y ${mesesRestantes} mes${mesesRestantes > 1 ? "es" : ""}`
+}
+
 export function InactiveClients() {
   const [dias, setDias] = useState(30)
   const { data: clientes, isLoading } = useClientesInactivos(dias)
@@ -48,7 +65,7 @@ export function InactiveClients() {
         <CardContent>
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-14 w-full" />
+              <Skeleton key={i} className="h-16 w-full" />
             ))}
           </div>
         </CardContent>
@@ -98,47 +115,82 @@ export function InactiveClients() {
           <div className="space-y-2">
             {items.slice(0, 10).map((cliente) => (
               <LoyaltyHighlight key={cliente.cliente_id} clienteId={cliente.cliente_id}>
-                <div
-                  className="flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors"
-                >
-                  {/* Avatar */}
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">
-                    {getInitials(cliente.nombre)}
+                <div className="p-3 hover:bg-muted/50 transition-colors space-y-2">
+                  {/* Fila principal: avatar + nombre + stats */}
+                  <div className="flex items-center gap-3">
+                    {/* Avatar */}
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">
+                      {getInitials(cliente.nombre)}
+                    </div>
+
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium truncate">
+                          {cliente.nombre}
+                        </p>
+                        <LoyaltyBadge clienteId={cliente.cliente_id} />
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        {cliente.telefono && (
+                          <span className="flex items-center gap-1">
+                            <Phone className="h-3 w-3" />
+                            {cliente.telefono}
+                          </span>
+                        )}
+                        {cliente.dias_sin_compra !== null && (
+                          <span className="flex items-center gap-1 text-status-por-vencer font-medium">
+                            <Clock className="h-3 w-3" />
+                            {formatDiasSinCompra(cliente.dias_sin_compra)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="hidden sm:flex items-center gap-3 text-xs shrink-0">
+                      <span className="flex items-center gap-1 text-muted-foreground">
+                        <ShoppingCart className="h-3 w-3" />
+                        {cliente.total_compras}
+                      </span>
+                      <span className="flex items-center gap-1 text-muted-foreground">
+                        <DollarSign className="h-3 w-3" />
+                        {formatCOP(cliente.total_gastado)}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium truncate">
-                        {cliente.nombre}
-                      </p>
-                      <LoyaltyBadge clienteId={cliente.cliente_id} />
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      {cliente.telefono && (
-                        <span className="flex items-center gap-1">
-                          <Phone className="h-3 w-3" />
-                          {cliente.telefono}
+                  {/* Fila secundaria: plataformas + última compra */}
+                  <div className="flex items-center gap-2 pl-12 flex-wrap">
+                    {/* Plataformas compradas */}
+                    {cliente.plataformas.length > 0 && (
+                      <div className="flex items-center gap-1">
+                        {cliente.plataformas.map((p) => (
+                          <PlatformIcon key={p} name={p} size="sm" />
+                        ))}
+                        <span className="text-[10px] text-muted-foreground ml-1">
+                          {cliente.plataformas.join(", ")}
                         </span>
-                      )}
-                      {cliente.dias_sin_compra !== null && (
-                        <span className="text-status-por-vencer font-medium">
-                          {cliente.dias_sin_compra} días sin compra
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                      </div>
+                    )}
 
-                  {/* Stats */}
-                  <div className="hidden sm:flex items-center gap-3 text-xs shrink-0">
-                    <span className="flex items-center gap-1 text-muted-foreground">
-                      <ShoppingCart className="h-3 w-3" />
-                      {cliente.total_compras}
-                    </span>
-                    <span className="flex items-center gap-1 text-muted-foreground">
-                      <DollarSign className="h-3 w-3" />
-                      {formatCOP(cliente.total_gastado)}
-                    </span>
+                    {/* Última compra */}
+                    {cliente.ultima_compra && (
+                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground ml-auto">
+                        <span>Última compra:</span>
+                        <DateDisplay
+                          date={cliente.ultima_compra}
+                          showRelative={false}
+                          className="font-medium"
+                        />
+                        {cliente.ultima_plataforma && (
+                          <>
+                            <span>en</span>
+                            <span className="font-medium">{cliente.ultima_plataforma}</span>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </LoyaltyHighlight>
