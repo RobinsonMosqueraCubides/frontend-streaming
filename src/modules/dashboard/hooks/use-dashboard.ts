@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { dashboardApi } from "@/api/dashboard"
 
 export function useDashboardResumen() {
@@ -78,5 +78,24 @@ export function useClientesAntiguos() {
     queryKey: ["dashboard", "clientes-antiguos"],
     queryFn: dashboardApi.clientesAntiguos,
     staleTime: 1000 * 60 * 10,
+  })
+}
+
+export function useCobros() {
+  return useQuery({
+    queryKey: ["dashboard", "cobros"],
+    queryFn: dashboardApi.cobros,
+    refetchInterval: 60_000,
+  })
+}
+
+export function useMarcarCobro() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ orderId, accion }: { orderId: number; accion: string }) =>
+      dashboardApi.marcarCobro(orderId, accion),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dashboard", "cobros"] })
+    },
   })
 }

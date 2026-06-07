@@ -66,7 +66,9 @@
   /* Status Colors */
   --color-status-activo: #22C55E;
   --color-status-disponible: #60A5FA;
+  --color-status-por-cobrar: #F97316;
   --color-status-por-vencer: #F59E0B;
+  --color-status-por-cortar: #EF4444;
   --color-status-vencida: #EF4444;
   --color-status-caida: #64748B;
 }
@@ -113,7 +115,9 @@
   --color-sidebar-accent-foreground: #C4B5FD;
   --color-status-activo: #4ADE80;
   --color-status-disponible: #60A5FA;
+  --color-status-por-cobrar: #FB923C;
   --color-status-por-vencer: #FBBF24;
+  --color-status-por-cortar: #F87171;
   --color-status-vencida: #F87171;
   --color-status-caida: #94A3B8;
 }
@@ -156,7 +160,9 @@
   --color-sidebar-accent-foreground: var(--color-sidebar-accent-foreground);
   --color-status-activo: var(--color-status-activo);
   --color-status-disponible: var(--color-status-disponible);
+  --color-status-por-cobrar: var(--color-status-por-cobrar);
   --color-status-por-vencer: var(--color-status-por-vencer);
+  --color-status-por-cortar: var(--color-status-por-cortar);
   --color-status-vencida: var(--color-status-vencida);
   --color-status-caida: var(--color-status-caida);
   --radius: 0.625rem;

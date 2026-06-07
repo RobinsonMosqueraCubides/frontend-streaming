@@ -98,6 +98,14 @@ export interface ClienteInactivo {
   ultima_plataforma: string | null
 }
 
+export type Cobro = Vencimiento & {
+  estado_envio: {
+    aviso: boolean
+    notificacion: boolean
+    corte: boolean
+  }
+}
+
 // ─── API functions ───────────────────────────────
 
 export const dashboardApi = {
@@ -130,4 +138,10 @@ export const dashboardApi = {
 
   clientesAntiguos: () =>
     api.get<number[]>("/dashboard/clientes-antiguos/").then((r) => r.data),
+
+  cobros: () =>
+    api.get<Cobro[]>("/dashboard/cobros/").then((r) => r.data),
+
+  marcarCobro: (orderId: number, accion: string) =>
+    api.post("/dashboard/cobros/marcar/", { order_id: orderId, accion }).then((r) => r.data),
 }

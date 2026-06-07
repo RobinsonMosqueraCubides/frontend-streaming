@@ -18,5 +18,6 @@ export const PATHS = {
   providerDetail: (id: string) => `/providers/${id}`,
   emails: "/emails",
   emailNew: "/emails/new",
+  cobros: "/cobros",
   login: "/login",
 } as const

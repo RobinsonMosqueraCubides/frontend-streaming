@@ -11,6 +11,7 @@ import {
   UserCircle,
   Building2,
   Mail,
+  CircleDollarSign,
   Sun,
   Moon,
   ChevronLeft,
@@ -28,6 +29,7 @@ const navItems = [
   { icon: UserCircle, label: "Clientes", path: PATHS.customers },
   { icon: Building2, label: "Proveedores", path: PATHS.providers },
   { icon: Mail, label: "Correos", path: PATHS.emails },
+  { icon: CircleDollarSign, label: "Cobros", path: PATHS.cobros },
 ]
 
 export function Sidebar() {

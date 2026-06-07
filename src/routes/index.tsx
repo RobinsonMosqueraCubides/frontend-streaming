@@ -11,6 +11,7 @@ import { OrdersListPage } from "@/modules/orders/pages/OrdersListPage"
 import { CustomersListPage } from "@/modules/customers/pages/CustomersListPage"
 import { ProvidersListPage } from "@/modules/providers/pages/ProvidersListPage"
 import { EmailsListPage } from "@/modules/emails/pages/EmailsListPage"
+import { CobrosPage } from "@/modules/cobros/pages/CobrosPage"
 import { PATHS } from "@/routes/paths"
 
 const queryClient = new QueryClient({
@@ -38,6 +39,7 @@ export default function AppRouter() {
             <Route path={PATHS.customers} element={<CustomersListPage />} />
             <Route path={PATHS.providers} element={<ProvidersListPage />} />
             <Route path={PATHS.emails} element={<EmailsListPage />} />
+            <Route path={PATHS.cobros} element={<CobrosPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
