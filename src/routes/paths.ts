@@ -19,5 +19,6 @@ export const PATHS = {
   emails: "/emails",
   emailNew: "/emails/new",
   cobros: "/cobros",
+  pagos: "/pagos",
   login: "/login",
 } as const

@@ -12,6 +12,7 @@ import { CustomersListPage } from "@/modules/customers/pages/CustomersListPage"
 import { ProvidersListPage } from "@/modules/providers/pages/ProvidersListPage"
 import { EmailsListPage } from "@/modules/emails/pages/EmailsListPage"
 import { CobrosPage } from "@/modules/cobros/pages/CobrosPage"
+import { PagosPage } from "@/modules/pagos/pages/PagosPage"
 import { PATHS } from "@/routes/paths"
 
 const queryClient = new QueryClient({
@@ -40,6 +41,7 @@ export default function AppRouter() {
             <Route path={PATHS.providers} element={<ProvidersListPage />} />
             <Route path={PATHS.emails} element={<EmailsListPage />} />
             <Route path={PATHS.cobros} element={<CobrosPage />} />
+            <Route path={PATHS.pagos} element={<PagosPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
