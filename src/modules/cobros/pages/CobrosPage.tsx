@@ -35,7 +35,7 @@ export function CobrosPage() {
       {/* Resumen */}
       <div className="flex flex-wrap items-center gap-3">
         <Badge variant="secondary" className="text-sm px-3 py-1">
-          {items.length} cliente{items.length !== 1 ? "s" : ""} pendiente{items.length !== 1 ? "s" : ""}
+          {`${items.length} cliente${items.length !== 1 ? "s" : ""} pendiente${items.length !== 1 ? "s" : ""}`}
         </Badge>
         {porCobrar > 0 && (
           <Badge className="text-sm px-3 py-1 bg-status-por-cobrar text-white">

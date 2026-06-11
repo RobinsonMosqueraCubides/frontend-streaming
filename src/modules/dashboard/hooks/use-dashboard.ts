@@ -96,6 +96,8 @@ export function useMarcarCobro() {
       dashboardApi.marcarCobro(orderId, accion),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dashboard", "cobros"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard", "resumen"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard", "vencimientos"] })
     },
   })
 }

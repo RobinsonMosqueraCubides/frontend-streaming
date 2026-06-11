@@ -108,7 +108,7 @@ export function InactiveClients() {
             <UserX className="h-8 w-8 text-success mb-2" />
             <p className="text-sm font-medium">Todos los clientes activos</p>
             <p className="text-xs text-muted-foreground">
-              No hay clientes sin compras en los últimos {dias} días.
+              No hay clientes sin compras en los últimos <span className="whitespace-nowrap">{dias} días.</span>
             </p>
           </div>
         ) : (

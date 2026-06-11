@@ -2,18 +2,20 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { Toaster } from "sonner"
+import { lazy } from "react"
 import { AppShell } from "@/components/layout/AppShell"
-import { DashboardPage } from "@/modules/dashboard/pages/DashboardPage"
-import { AccountsListPage } from "@/modules/accounts/pages/AccountsListPage"
-import { ScreensListPage } from "@/modules/screens/pages/ScreensListPage"
-import { CustomerAccountsListPage } from "@/modules/customer-accounts/pages/CustomerAccountsListPage"
-import { OrdersListPage } from "@/modules/orders/pages/OrdersListPage"
-import { CustomersListPage } from "@/modules/customers/pages/CustomersListPage"
-import { ProvidersListPage } from "@/modules/providers/pages/ProvidersListPage"
-import { EmailsListPage } from "@/modules/emails/pages/EmailsListPage"
-import { CobrosPage } from "@/modules/cobros/pages/CobrosPage"
-import { PagosPage } from "@/modules/pagos/pages/PagosPage"
 import { PATHS } from "@/routes/paths"
+
+const DashboardPage = lazy(() => import("@/modules/dashboard/pages/DashboardPage").then(m => ({ default: m.DashboardPage })))
+const AccountsListPage = lazy(() => import("@/modules/accounts/pages/AccountsListPage").then(m => ({ default: m.AccountsListPage })))
+const ScreensListPage = lazy(() => import("@/modules/screens/pages/ScreensListPage").then(m => ({ default: m.ScreensListPage })))
+const CustomerAccountsListPage = lazy(() => import("@/modules/customer-accounts/pages/CustomerAccountsListPage").then(m => ({ default: m.CustomerAccountsListPage })))
+const OrdersListPage = lazy(() => import("@/modules/orders/pages/OrdersListPage").then(m => ({ default: m.OrdersListPage })))
+const CustomersListPage = lazy(() => import("@/modules/customers/pages/CustomersListPage").then(m => ({ default: m.CustomersListPage })))
+const ProvidersListPage = lazy(() => import("@/modules/providers/pages/ProvidersListPage").then(m => ({ default: m.ProvidersListPage })))
+const EmailsListPage = lazy(() => import("@/modules/emails/pages/EmailsListPage").then(m => ({ default: m.EmailsListPage })))
+const CobrosPage = lazy(() => import("@/modules/cobros/pages/CobrosPage").then(m => ({ default: m.CobrosPage })))
+const PagosPage = lazy(() => import("@/modules/pagos/pages/PagosPage").then(m => ({ default: m.PagosPage })))
 
 const queryClient = new QueryClient({
   defaultOptions: {

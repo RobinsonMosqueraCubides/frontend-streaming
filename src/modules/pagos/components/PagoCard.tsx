@@ -103,7 +103,7 @@ export function PagoCard({ item }: PagoCardProps) {
 
           {/* Items */}
           <p className="text-xs text-muted-foreground">
-            📦 {item.items_count} item{item.items_count !== 1 ? "s" : ""}
+            {`📦 ${item.items_count} item${item.items_count !== 1 ? "s" : ""}`}
           </p>
 
           {/* Botones de acción */}

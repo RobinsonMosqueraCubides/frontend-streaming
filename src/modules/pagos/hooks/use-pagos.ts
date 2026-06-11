@@ -7,6 +7,8 @@ export function useActualizarPago() {
     mutationFn: (orderId: number) => pagosApi.actualizarPago(orderId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dashboard", "cobros"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard", "resumen"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard", "vencimientos"] })
     },
   })
 }
@@ -18,6 +20,8 @@ export function useFechaPersonalizada() {
       pagosApi.fechaPersonalizada(orderId, fecha),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dashboard", "cobros"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard", "resumen"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard", "vencimientos"] })
     },
   })
 }
@@ -28,6 +32,8 @@ export function useCortePago() {
     mutationFn: (orderId: number) => pagosApi.corte(orderId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dashboard", "cobros"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard", "resumen"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard", "vencimientos"] })
     },
   })
 }

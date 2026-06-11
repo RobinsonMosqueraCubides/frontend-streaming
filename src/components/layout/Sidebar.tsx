@@ -56,19 +56,27 @@ export function Sidebar() {
         )}
       >
         {/* Logo */}
-        <div className="flex h-16 items-center justify-between px-4 border-b border-white/10">
+        <div className="flex h-16 items-center justify-between px-4 border-b border-white/5">
           {!sidebarCollapsed && (
             <div className="flex items-center gap-2">
-              <span className="text-xl">🎬</span>
-              <span className="text-lg font-bold text-white">StreamAdmin</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 shadow-inner">
+                <span className="text-base">🎬</span>
+              </div>
+              <span className="text-base font-extrabold tracking-wider bg-gradient-to-r from-white via-white to-primary-soft bg-clip-text text-transparent">
+                StreamAdmin
+              </span>
             </div>
           )}
-          {sidebarCollapsed && <span className="mx-auto text-xl">🎬</span>}
+          {sidebarCollapsed && (
+            <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 shadow-inner">
+              <span className="text-base">🎬</span>
+            </div>
+          )}
 
           {/* Desktop toggle */}
           <button
             onClick={toggleSidebar}
-            className="hidden h-8 w-8 items-center justify-center rounded-md hover:bg-sidebar-accent lg:inline-flex"
+            className="hidden h-8 w-8 items-center justify-center rounded-md hover:bg-white/10 transition-colors lg:inline-flex"
           >
             {sidebarCollapsed ? <ChevronRight className="h-4 w-4 text-white" /> : <ChevronLeft className="h-4 w-4 text-white" />}
           </button>
@@ -76,13 +84,13 @@ export function Sidebar() {
           {/* Mobile close */}
           <button
             onClick={() => setMobileOpen(false)}
-            className="h-8 w-8 items-center justify-center rounded-md hover:bg-sidebar-accent lg:hidden"
+            className="h-8 w-8 items-center justify-center rounded-md hover:bg-white/10 transition-colors lg:hidden"
           >
             <ChevronLeft className="h-4 w-4 text-white" />
           </button>
         </div>
 
-        <Separator className="bg-white/10" />
+        <Separator className="bg-white/5" />
 
         {/* Navigation */}
         <nav className="flex-1 space-y-1 overflow-y-auto p-2">
@@ -95,24 +103,40 @@ export function Sidebar() {
                 cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-sidebar-accent text-white shadow-md shadow-black/10"
-                    : "text-white/80 hover:bg-sidebar-accent/60 hover:text-white",
+                    ? "bg-white/10 text-white shadow-inner border-l-2 border-white/70"
+                    : "text-white/70 hover:bg-white/5 hover:text-white",
                   sidebarCollapsed && "justify-center px-2"
                 )
               }
             >
-              <Icon className="h-5 w-5 shrink-0" />
+              <Icon className="h-4 w-4 shrink-0" />
               {!sidebarCollapsed && <span>{label}</span>}
             </NavLink>
           ))}
         </nav>
 
-        {/* Footer - Theme toggle */}
-        <div className="space-y-1 border-t border-white/10 p-2">
+        {/* Footer - Profile & Theme toggle */}
+        <div className="border-t border-white/5 p-2 space-y-1">
+          {/* User Profile info */}
+          <div className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2",
+            sidebarCollapsed && "justify-center px-1"
+          )}>
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-white border border-white/20 shadow-sm">
+              A
+            </div>
+            {!sidebarCollapsed && (
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-white truncate">Administrador</p>
+                <p className="text-[10px] text-white/50 truncate">admin@streamadmin.com</p>
+              </div>
+            )}
+          </div>
+
           <button
             onClick={toggleTheme}
             className={cn(
-              "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-sidebar-accent/50 text-white/80 hover:text-white",
+              "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-white/5 text-white/70 hover:text-white",
               sidebarCollapsed && "justify-center px-2"
             )}
           >
