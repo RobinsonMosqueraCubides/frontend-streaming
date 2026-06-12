@@ -6,6 +6,10 @@ import {
   mockAccounts,
   mockDashboardResumen,
   mockInventario,
+  mockCustomers,
+  mockScreens,
+  mockCustomerAccounts,
+  mockOrders,
 } from "./mockData"
 
 // Bandera para activar/desactivar fácilmente el fallback de datos de prueba
@@ -81,6 +85,46 @@ api.interceptors.response.use(
       } else if (url.includes("/accounts/")) {
         if (method === "get") {
           mockResponseData = { count: mockAccounts.length, results: mockAccounts }
+        } else if (method === "post") {
+          mockResponseData = { id: Math.floor(Math.random() * 1000) + 100, ...JSON.parse(error.config.data || "{}") }
+        } else if (method === "put" || method === "patch") {
+          mockResponseData = JSON.parse(error.config.data || "{}")
+        } else if (method === "delete") {
+          mockResponseData = {}
+        }
+      } else if (url.includes("/screens/")) {
+        if (method === "get") {
+          mockResponseData = { count: mockScreens.length, results: mockScreens }
+        } else if (method === "post") {
+          mockResponseData = { id: Math.floor(Math.random() * 1000) + 100, ...JSON.parse(error.config.data || "{}") }
+        } else if (method === "put" || method === "patch") {
+          mockResponseData = JSON.parse(error.config.data || "{}")
+        } else if (method === "delete") {
+          mockResponseData = {}
+        }
+      } else if (url.includes("/customers/")) {
+        if (method === "get") {
+          mockResponseData = { count: mockCustomers.length, results: mockCustomers }
+        } else if (method === "post") {
+          mockResponseData = { id: Math.floor(Math.random() * 1000) + 100, ...JSON.parse(error.config.data || "{}") }
+        } else if (method === "put" || method === "patch") {
+          mockResponseData = JSON.parse(error.config.data || "{}")
+        } else if (method === "delete") {
+          mockResponseData = {}
+        }
+      } else if (url.includes("/customer-accounts/")) {
+        if (method === "get") {
+          mockResponseData = { count: mockCustomerAccounts.length, results: mockCustomerAccounts }
+        } else if (method === "post") {
+          mockResponseData = { id: Math.floor(Math.random() * 1000) + 100, ...JSON.parse(error.config.data || "{}") }
+        } else if (method === "put" || method === "patch") {
+          mockResponseData = JSON.parse(error.config.data || "{}")
+        } else if (method === "delete") {
+          mockResponseData = {}
+        }
+      } else if (url.includes("/orders/")) {
+        if (method === "get") {
+          mockResponseData = { count: mockOrders.length, results: mockOrders }
         } else if (method === "post") {
           mockResponseData = { id: Math.floor(Math.random() * 1000) + 100, ...JSON.parse(error.config.data || "{}") }
         } else if (method === "put" || method === "patch") {

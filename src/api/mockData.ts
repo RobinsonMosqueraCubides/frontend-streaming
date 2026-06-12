@@ -3,6 +3,10 @@ import type { Platform } from "./platforms"
 import type { EmailAccount } from "./emails"
 import type { Account } from "@/modules/accounts/types"
 import type { DashboardResumen, Inventario } from "./dashboard"
+import type { Screen } from "@/modules/screens/types"
+import type { Customer } from "./customers"
+import type { CustomerAccount } from "./customerAccounts"
+import type { Order } from "./orders"
 
 export const mockProviders: Provider[] = [
   {
@@ -202,3 +206,159 @@ export const mockInventario: Inventario = {
     caidas: 1,
   },
 }
+
+export const mockCustomers: Customer[] = [
+  {
+    id: 1,
+    name: "Leidisita Gómez",
+    phone: "3154829910",
+    notes: "Cliente recurrente de combos de streaming.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 2,
+    name: "Nataly COPOWER",
+    phone: "3209871122",
+    notes: "Tiene pantallas adicionales activas.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 3,
+    name: "Salome Esposo",
+    phone: "3103445588",
+    notes: "Paga adelantado.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 4,
+    name: "Dairo Vargas",
+    phone: "3004455667",
+    notes: "Prefiere cuentas completas.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+]
+
+export const mockScreens: Screen[] = [
+  {
+    id: 1,
+    account: 1,
+    account_info: "netflix.premium01@gmail.com (Netflix Premium)",
+    customer: 1,
+    customer_name: "Leidisita Gómez",
+    order: 1,
+    pin: "1212",
+    precio_venta: 12000,
+    profile_name: "Perfil Leidi",
+    status: "activo",
+    fecha_inicio: "2026-05-26",
+    fecha_cobro: "2026-06-25",
+    fecha_corte: "2026-06-26",
+    observaciones: "Asignado en combo",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 2,
+    account: 1,
+    account_info: "netflix.premium01@gmail.com (Netflix Premium)",
+    customer: 2,
+    customer_name: "Nataly COPOWER",
+    order: 2,
+    pin: "6571",
+    precio_venta: 12000,
+    profile_name: "Perfil Nataly",
+    status: "por_vencer",
+    fecha_inicio: "2026-06-04",
+    fecha_cobro: "2026-07-03",
+    fecha_corte: "2026-07-04",
+    observaciones: "Pago pendiente",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 3,
+    account: 2,
+    account_info: "disney.latam.family@hotmail.com (Disney+ Estándar)",
+    status: "disponible",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+]
+
+export const mockCustomerAccounts: CustomerAccount[] = [
+  {
+    id: 1,
+    account: 1,
+    platform_name: "Netflix Premium",
+    email_address: "netflix.premium01@gmail.com",
+    customer: 3,
+    customer_name: "Salome Esposo",
+    order: 3,
+    contrasena: "NetflixSalome99*",
+    precio_venta: 35000,
+    profile_name: "Familia Salome",
+    status: "activo",
+    fecha_inicio: "2026-05-18",
+    fecha_cobro: "2026-06-17",
+    fecha_corte: "2026-06-18",
+    observaciones: "Cuenta completa vendida",
+  },
+  {
+    id: 2,
+    account: 3,
+    platform_name: "Max (HBO)",
+    email_address: "carlos.mendoza.hbo@gmail.com",
+    customer: 4,
+    customer_name: "Dairo Vargas",
+    order: 4,
+    contrasena: "MaxPassDairo",
+    precio_venta: 30000,
+    profile_name: "Casa Dairo",
+    status: "caida",
+    fecha_inicio: "2026-06-01",
+    fecha_cobro: "2026-06-30",
+    fecha_corte: "2026-07-01",
+    observaciones: "Reportado por soporte",
+  },
+]
+
+export const mockOrders: Order[] = [
+  {
+    id: 1,
+    customer: 1,
+    customer_name: "Leidisita Gómez",
+    total: 37000,
+    status: "activo",
+    fecha_inicio: "2026-05-26",
+    fecha_cobro: "2026-06-25",
+    fecha_corte: "2026-06-26",
+    observaciones: "Combo completo Leidi",
+  },
+  {
+    id: 2,
+    customer: 2,
+    customer_name: "Nataly COPOWER",
+    total: 34000,
+    status: "por_vencer",
+    fecha_inicio: "2026-06-04",
+    fecha_cobro: "2026-07-03",
+    fecha_corte: "2026-07-04",
+    observaciones: "Cobrar a inicio de mes",
+  },
+  {
+    id: 3,
+    customer: 3,
+    customer_name: "Salome Esposo",
+    total: 27000,
+    status: "vencida",
+    fecha_inicio: "2026-05-18",
+    fecha_cobro: "2026-06-17",
+    fecha_corte: "2026-06-18",
+    observaciones: "Pago demorado",
+  },
+]
+
