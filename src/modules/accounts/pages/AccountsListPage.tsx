@@ -1,13 +1,13 @@
 import { useState, type FormEvent, type TextareaHTMLAttributes } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { KeyRound, Pencil, Plus, Trash2 } from "lucide-react"
+import { KeyRound, Pencil, Plus, Trash2, Search, SlidersHorizontal, AlertCircle, CheckCircle2, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 import { accountsApi } from "@/api/accounts"
 import { emailsApi } from "@/api/emails"
 import { platformsApi } from "@/api/platforms"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -39,6 +39,11 @@ export function AccountsListPage() {
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<Account | null>(null)
   const [form, setForm] = useState<Partial<Account>>(emptyAccount)
+
+  // Filtros
+  const [search, setSearch] = useState("")
+  const [platformFilter, setPlatformFilter] = useState("all")
+  const [statusFilter, setStatusFilter] = useState("all")
 
   const accounts = useQuery({
     queryKey: ["accounts", "crud"],
@@ -100,40 +105,201 @@ export function AccountsListPage() {
 
   const emailLabel = (id?: number) => emails.data?.find((email) => email.id === id)?.email ?? "Sin correo"
 
+  const listData = accounts.data ?? []
+
+  // Datos filtrados
+  const filteredAccounts = listData.filter((account) => {
+    const term = search.toLowerCase().trim()
+    const matchesSearch =
+      !term ||
+      (account.platform_name ?? "").toLowerCase().includes(term) ||
+      (account.email_address ?? emailLabel(account.email)).toLowerCase().includes(term) ||
+      (account.credentials ?? "").toLowerCase().includes(term) ||
+      (account.observaciones ?? "").toLowerCase().includes(term) ||
+      (account.notes ?? "").toLowerCase().includes(term)
+
+    const matchesPlatform = platformFilter === "all" || String(account.platform) === platformFilter
+    const matchesStatus = statusFilter === "all" || account.status === statusFilter
+
+    return matchesSearch && matchesPlatform && matchesStatus
+  })
+
+  // Estadísticas
+  const totalAccounts = listData.length
+  const activeAccounts = listData.filter((a) => a.status === "activo").length
+  const warningAccounts = listData.filter((a) => a.status === "por_vencer").length
+  const dangerAccounts = listData.filter((a) => a.status === "vencida" || a.status === "caida").length
+
+  const getStatusBadgeVariant = (status: AccountStatus) => {
+    switch (status) {
+      case "activo":
+        return "success"
+      case "por_vencer":
+        return "warning"
+      case "vencida":
+      case "caida":
+        return "destructive"
+      default:
+        return "secondary"
+    }
+  }
+
   return (
     <div className="space-y-6">
+      {/* Cabecera */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Cuentas</h1>
-          <p className="text-sm text-muted-foreground">Inventario de cuentas compradas.</p>
+          <p className="text-sm text-muted-foreground">Inventario de cuentas compradas y pantallas.</p>
         </div>
-        <Button onClick={() => { setEditing(null); setForm(emptyAccount); setOpen(true) }}>
+        <Button onClick={() => { setEditing(null); setForm(emptyAccount); setOpen(true) }} className="shadow-sm transition-transform duration-200 active:scale-95">
           <Plus className="h-4 w-4" />
           Nueva cuenta
         </Button>
       </div>
 
-      <Card>
+      {/* Tarjetas de estadísticas */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="border-primary/10 bg-gradient-to-br from-card to-primary/5 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Total Cuentas</CardTitle>
+            <KeyRound className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{accounts.isLoading ? "..." : totalAccounts}</div>
+            <p className="text-[10px] text-muted-foreground mt-1">Cuentas registradas</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-emerald-500/10 bg-gradient-to-br from-card to-emerald-500/5 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Activas</CardTitle>
+            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{accounts.isLoading ? "..." : activeAccounts}</div>
+            <p className="text-[10px] text-muted-foreground mt-1">Funcionando correctamente</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-yellow-500/10 bg-gradient-to-br from-card to-yellow-500/5 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Por Vencer</CardTitle>
+            <RefreshCw className="h-4 w-4 text-yellow-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{accounts.isLoading ? "..." : warningAccounts}</div>
+            <p className="text-[10px] text-muted-foreground mt-1">Próximas al corte de pago</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-destructive/10 bg-gradient-to-br from-card to-destructive/5 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Vencidas / Caídas</CardTitle>
+            <AlertCircle className="h-4 w-4 text-destructive" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-destructive">{accounts.isLoading ? "..." : dangerAccounts}</div>
+            <p className="text-[10px] text-muted-foreground mt-1">Requieren atención urgente</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Barra de Filtros */}
+      <Card className="border-primary/10 bg-card/60 backdrop-blur-sm shadow-sm">
+        <CardContent className="p-4 grid gap-3 md:grid-cols-[1fr_200px_160px_auto] md:items-center">
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por correo, credenciales, notas..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 bg-background/50 focus-visible:ring-primary"
+            />
+          </div>
+
+          <div className="w-full">
+            <Select value={platformFilter} onValueChange={setPlatformFilter}>
+              <SelectTrigger className="bg-background/50 focus:ring-primary">
+                <SelectValue placeholder="Plataforma" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas las plataformas</SelectItem>
+                {platforms.data?.map((p) => (
+                  <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="w-full">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="bg-background/50 focus:ring-primary">
+                <SelectValue placeholder="Estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos los estados</SelectItem>
+                <SelectItem value="activo">Activo</SelectItem>
+                <SelectItem value="por_vencer">Por vencer</SelectItem>
+                <SelectItem value="vencida">Vencida</SelectItem>
+                <SelectItem value="caida">Caída</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground px-2 py-1.5 bg-muted/50 rounded-md border justify-center">
+            <SlidersHorizontal className="h-3.5 w-3.5" />
+            <span>Filtros:</span>
+            {(search || platformFilter !== "all" || statusFilter !== "all") ? (
+              <span className="bg-primary text-primary-foreground px-1.5 py-0.5 rounded text-[10px] font-bold">Activos</span>
+            ) : (
+              <span className="text-[10px]">Ninguno</span>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Listado */}
+      <Card className="border-primary/10 shadow-sm overflow-hidden">
         <CardContent className="p-0">
           {accounts.isLoading ? (
             <div className="space-y-2 p-4">{Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-16" />)}</div>
+          ) : filteredAccounts.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground">
+              No se encontraron cuentas con los filtros actuales.
+            </div>
           ) : (
             <div className="divide-y divide-border">
-              {(accounts.data ?? []).map((account) => (
-                <div key={account.id} className="grid gap-3 p-4 lg:grid-cols-[1fr_180px_120px_120px_auto] lg:items-center">
+              {filteredAccounts.map((account) => (
+                <div key={account.id} className="grid gap-3 p-4 lg:grid-cols-[1fr_180px_120px_120px_auto] lg:items-center transition-colors duration-200 hover:bg-muted/30">
                   <div className="flex items-start gap-3">
-                    <KeyRound className="mt-1 h-4 w-4 text-primary" />
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                      <KeyRound className="h-4 w-4" />
+                    </div>
                     <div>
-                      <p className="font-medium">{account.platform_name ?? `Plataforma #${account.platform}`}</p>
-                      <p className="text-xs text-muted-foreground">{account.email_address ?? emailLabel(account.email)}</p>
+                      <p className="font-semibold text-foreground">{account.platform_name ?? `Plataforma #${account.platform}`}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{account.email_address ?? emailLabel(account.email)}</p>
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">{account.max_screens} pantalla(s)</p>
-                  <Badge variant={account.status === "activo" ? "success" : "secondary"}>{account.status}</Badge>
-                  <p className="text-sm text-muted-foreground">{account.fecha_corte ?? "Sin corte"}</p>
-                  <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => startEdit(account)}><Pencil className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="icon" onClick={() => remove.mutate(account.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                  <div>
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block lg:hidden">Pantallas:</span>
+                    <span className="text-sm text-foreground/80 font-medium">{account.max_screens} pantalla(s)</span>
+                  </div>
+                  <div>
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block lg:hidden">Estado:</span>
+                    <Badge variant={getStatusBadgeVariant(account.status)}>
+                      {account.status.replace("_", " ")}
+                    </Badge>
+                  </div>
+                  <div>
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block lg:hidden">Fecha Corte:</span>
+                    <p className={`text-sm font-medium ${account.status === "vencida" || account.status === "caida" ? "text-destructive font-bold" : "text-muted-foreground"}`}>
+                      {account.fecha_corte ?? "Sin corte"}
+                    </p>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary transition-all duration-200" onClick={() => startEdit(account)}><Pencil className="h-3.5 w-3.5" /></Button>
+                    <Button variant="outline" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive transition-all duration-200" onClick={() => remove.mutate(account.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
                   </div>
                 </div>
               ))}
@@ -169,7 +335,7 @@ export function AccountsListPage() {
                     <SelectItem value="activo">Activo</SelectItem>
                     <SelectItem value="por_vencer">Por vencer</SelectItem>
                     <SelectItem value="vencida">Vencida</SelectItem>
-                    <SelectItem value="caida">Caida</SelectItem>
+                    <SelectItem value="caida">Caída</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
