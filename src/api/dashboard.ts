@@ -136,9 +136,6 @@ export const dashboardApi = {
   clientesInactivos: (dias = 30) =>
     api.get<ClienteInactivo[]>("/dashboard/clientes-inactivos/", { params: { dias } }).then((r) => r.data),
 
-  clientesAntiguos: () =>
-    api.get<number[]>("/dashboard/clientes-antiguos/").then((r) => r.data),
-
   cobros: () =>
     api.get<Cobro[]>("/dashboard/cobros/").then((r) => r.data),
 

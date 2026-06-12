@@ -1,6 +1,6 @@
 import { KpiCard } from "@/components/kpi-card"
-import { Wallet, TrendingDown, TrendingUp, KeyRound, Monitor, Receipt, Star } from "lucide-react"
-import { useDashboardResumen, useClientesAntiguos } from "../hooks/use-dashboard"
+import { Wallet, TrendingDown, TrendingUp, KeyRound, Monitor, Receipt } from "lucide-react"
+import { useDashboardResumen } from "../hooks/use-dashboard"
 
 function formatCOP(value: number | string): string {
   const num = typeof value === "string" ? parseFloat(value) : value
@@ -14,12 +14,11 @@ function formatCOP(value: number | string): string {
 
 export function KpiCards() {
   const { data, isLoading } = useDashboardResumen()
-  const { data: clientesAntiguos } = useClientesAntiguos()
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
-        {Array.from({ length: 7 }).map((_, i) => (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {Array.from({ length: 6 }).map((_, i) => (
           <KpiCard key={i} title="" value="" loading />
         ))}
       </div>
@@ -64,19 +63,14 @@ export function KpiCards() {
       value: conteos.ordenes_activas,
       icon: Receipt,
     },
-    {
-      title: "Clientes Antiguos",
-      value: clientesAntiguos?.length ?? 0,
-      icon: Star,
-      subtitle: "1+ año de relación",
-    },
   ]
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
       {kpis.map((kpi) => (
         <KpiCard key={kpi.title} {...kpi} />
       ))}
     </div>
   )
 }
+

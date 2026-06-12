@@ -73,14 +73,6 @@ export function useClientesInactivos(dias = 30) {
   })
 }
 
-export function useClientesAntiguos() {
-  return useQuery({
-    queryKey: ["dashboard", "clientes-antiguos"],
-    queryFn: dashboardApi.clientesAntiguos,
-    staleTime: 1000 * 60 * 10,
-  })
-}
-
 export function useCobros() {
   return useQuery({
     queryKey: ["dashboard", "cobros"],

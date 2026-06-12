@@ -1,5 +1,6 @@
 export const PATHS = {
   dashboard: "/dashboard",
+  providerPurchases: "/compras/proveedores",
   accounts: "/accounts",
   accountNew: "/accounts/new",
   accountDetail: (id: string) => `/accounts/${id}`,
@@ -16,6 +17,7 @@ export const PATHS = {
   providers: "/providers",
   providerNew: "/providers/new",
   providerDetail: (id: string) => `/providers/${id}`,
+  platforms: "/platforms",
   emails: "/emails",
   emailNew: "/emails/new",
   cobros: "/cobros",
