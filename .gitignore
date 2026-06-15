@@ -25,3 +25,10 @@ dist-ssr
 
 # Local backend schemas
 backend_data/
+
+# Agents
+.agents/
+
+# Skills lock
+skills-lock.json
+

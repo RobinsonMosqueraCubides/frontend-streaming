@@ -1,11 +1,10 @@
-import { useState, type FormEvent, type TextareaHTMLAttributes } from "react"
+import { useState, useMemo, type FormEvent, type TextareaHTMLAttributes } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Monitor, Pencil, Plus, Trash2, Search, SlidersHorizontal, CheckCircle2, AlertTriangle, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
 import { screensApi } from "@/api/screens"
 import { accountsApi } from "@/api/accounts"
 import { customersApi } from "@/api/customers"
-import { ordersApi } from "@/api/orders"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -54,7 +53,6 @@ export function ScreensListPage() {
     queryFn: () => accountsApi.list({ page_size: 100 }).then((data) => data.results),
   })
   const customers = useQuery({ queryKey: ["customers"], queryFn: () => customersApi.list() })
-  const orders = useQuery({ queryKey: ["orders"], queryFn: () => ordersApi.list() })
 
   const save = useMutation({
     mutationFn: () => editing ? screensApi.partialUpdate(editing.id, form) : screensApi.create(form),
@@ -119,25 +117,33 @@ export function ScreensListPage() {
   const listData = screens.data ?? []
 
   // Filtrado
-  const filteredScreens = listData.filter((screen) => {
-    const term = search.toLowerCase().trim()
-    const matchesSearch =
-      !term ||
-      (screen.account_info ?? accountLabel(screen.account)).toLowerCase().includes(term) ||
-      (screen.customer_name ?? customerName(screen.customer)).toLowerCase().includes(term) ||
-      (screen.profile_name ?? "").toLowerCase().includes(term) ||
-      (screen.observaciones ?? "").toLowerCase().includes(term)
+  const filteredScreens = useMemo(() => {
+    return listData.filter((screen) => {
+      const term = search.toLowerCase().trim()
+      const matchesSearch =
+        !term ||
+        (screen.account_info ?? accountLabel(screen.account)).toLowerCase().includes(term) ||
+        (screen.customer_name ?? customerName(screen.customer)).toLowerCase().includes(term) ||
+        (screen.profile_name ?? "").toLowerCase().includes(term) ||
+        (screen.observaciones ?? "").toLowerCase().includes(term)
 
-    const matchesStatus = statusFilter === "all" || screen.status === statusFilter
+      const matchesStatus = statusFilter === "all" || screen.status === statusFilter
 
-    return matchesSearch && matchesStatus
-  })
+      return matchesSearch && matchesStatus
+    })
+  }, [listData, search, statusFilter, accounts.data, customers.data])
 
-  // Estadísticas
-  const total = listData.length
-  const active = listData.filter((s) => s.status === "activo").length
-  const available = listData.filter((s) => s.status === "disponible").length
-  const issues = listData.filter((s) => s.status === "vencida" || s.status === "caida").length
+  // Estadísticas (solo dependen de listData)
+  const stats = useMemo(() => {
+    return {
+      total: listData.length,
+      active: listData.filter((s) => s.status === "activo").length,
+      available: listData.filter((s) => s.status === "disponible").length,
+      issues: listData.filter((s) => s.status === "vencida" || s.status === "caida").length,
+    }
+  }, [listData])
+
+  const { total, active, available, issues } = stats
 
   const getStatusBadgeVariant = (status: ScreenStatus) => {
     switch (status) {

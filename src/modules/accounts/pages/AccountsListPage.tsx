@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type TextareaHTMLAttributes } from "react"
+import { useState, useMemo, type FormEvent, type TextareaHTMLAttributes } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { KeyRound, Pencil, Plus, Trash2, Search, SlidersHorizontal, AlertCircle, CheckCircle2, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
@@ -108,27 +108,35 @@ export function AccountsListPage() {
   const listData = accounts.data ?? []
 
   // Datos filtrados
-  const filteredAccounts = listData.filter((account) => {
-    const term = search.toLowerCase().trim()
-    const matchesSearch =
-      !term ||
-      (account.platform_name ?? "").toLowerCase().includes(term) ||
-      (account.email_address ?? emailLabel(account.email)).toLowerCase().includes(term) ||
-      (account.credentials ?? "").toLowerCase().includes(term) ||
-      (account.observaciones ?? "").toLowerCase().includes(term) ||
-      (account.notes ?? "").toLowerCase().includes(term)
+  const filteredAccounts = useMemo(() => {
+    return listData.filter((account) => {
+      const term = search.toLowerCase().trim()
+      const matchesSearch =
+        !term ||
+        (account.platform_name ?? "").toLowerCase().includes(term) ||
+        (account.email_address ?? emailLabel(account.email)).toLowerCase().includes(term) ||
+        (account.credentials ?? "").toLowerCase().includes(term) ||
+        (account.observaciones ?? "").toLowerCase().includes(term) ||
+        (account.notes ?? "").toLowerCase().includes(term)
 
-    const matchesPlatform = platformFilter === "all" || String(account.platform) === platformFilter
-    const matchesStatus = statusFilter === "all" || account.status === statusFilter
+      const matchesPlatform = platformFilter === "all" || String(account.platform) === platformFilter
+      const matchesStatus = statusFilter === "all" || account.status === statusFilter
 
-    return matchesSearch && matchesPlatform && matchesStatus
-  })
+      return matchesSearch && matchesPlatform && matchesStatus
+    })
+  }, [listData, search, platformFilter, statusFilter, emails.data])
 
-  // Estadísticas
-  const totalAccounts = listData.length
-  const activeAccounts = listData.filter((a) => a.status === "activo").length
-  const warningAccounts = listData.filter((a) => a.status === "por_vencer").length
-  const dangerAccounts = listData.filter((a) => a.status === "vencida" || a.status === "caida").length
+  // Estadísticas (solo dependen de listData)
+  const stats = useMemo(() => {
+    return {
+      totalAccounts: listData.length,
+      activeAccounts: listData.filter((a) => a.status === "activo").length,
+      warningAccounts: listData.filter((a) => a.status === "por_vencer").length,
+      dangerAccounts: listData.filter((a) => a.status === "vencida" || a.status === "caida").length,
+    }
+  }, [listData])
+
+  const { totalAccounts, activeAccounts, warningAccounts, dangerAccounts } = stats
 
   const getStatusBadgeVariant = (status: AccountStatus) => {
     switch (status) {

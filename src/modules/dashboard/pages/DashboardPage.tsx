@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useDashboardResumen } from "../hooks/use-dashboard"
 import { KpiCards } from "../components/KpiCards"
 import { RevenueByPlatform } from "../components/RevenueByPlatform"
@@ -15,7 +16,7 @@ export function DashboardPage() {
   const { data: screens } = useScreens()
 
   // Build status distribution data for donut chart
-  const buildStatusData = () => {
+  const statusData = useMemo(() => {
     if (!accounts && !screens) return []
 
     const counts: Record<string, number> = {}
@@ -29,7 +30,7 @@ export function DashboardPage() {
     return Object.entries(counts)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value)
-  }
+  }, [accounts, screens])
 
   return (
     <div className="space-y-6">
@@ -62,7 +63,7 @@ export function DashboardPage() {
       {/* Row 2: Status chart + Expiring soon */}
       <div className="grid gap-6 lg:grid-cols-2">
         <StatusChart
-          data={buildStatusData()}
+          data={statusData}
           title="Distribución de Estados"
         />
         <ExpiringSoon />

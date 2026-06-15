@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type TextareaHTMLAttributes } from "react"
+import { useState, useMemo, type FormEvent, type TextareaHTMLAttributes } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ShieldCheck, Pencil, Plus, Trash2, Search, SlidersHorizontal, UserCheck, AlertTriangle } from "lucide-react"
 import { toast } from "sonner"
@@ -44,7 +44,7 @@ export function CustomerAccountsListPage() {
 
   const customerAccounts = useQuery({
     queryKey: ["customerAccounts"],
-    queryFn: () => customerAccountsApi.list().then((data) => data.results),
+    queryFn: () => customerAccountsApi.list(),
   })
   const accounts = useQuery({
     queryKey: ["accounts", "list"],
@@ -113,25 +113,33 @@ export function CustomerAccountsListPage() {
   const listData = customerAccounts.data ?? []
 
   // Filtrado
-  const filteredCAs = listData.filter((ca) => {
-    const term = search.toLowerCase().trim()
-    const matchesSearch =
-      !term ||
-      (ca.platform_name ?? "").toLowerCase().includes(term) ||
-      (ca.email_address ?? accountLabel(ca.account)).toLowerCase().includes(term) ||
-      (ca.customer_name ?? customerName(ca.customer)).toLowerCase().includes(term) ||
-      (ca.observaciones ?? "").toLowerCase().includes(term)
+  const filteredCAs = useMemo(() => {
+    return listData.filter((ca: CustomerAccount) => {
+      const term = search.toLowerCase().trim()
+      const matchesSearch =
+        !term ||
+        (ca.platform_name ?? "").toLowerCase().includes(term) ||
+        (ca.email_address ?? accountLabel(ca.account)).toLowerCase().includes(term) ||
+        (ca.customer_name ?? customerName(ca.customer)).toLowerCase().includes(term) ||
+        (ca.observaciones ?? "").toLowerCase().includes(term)
 
-    const matchesStatus = statusFilter === "all" || ca.status === statusFilter
+      const matchesStatus = statusFilter === "all" || ca.status === statusFilter
 
-    return matchesSearch && matchesStatus
-  })
+      return matchesSearch && matchesStatus
+    })
+  }, [listData, search, statusFilter, accounts.data, customers.data])
 
-  // Estadísticas
-  const total = listData.length
-  const active = listData.filter((ca) => ca.status === "activo").length
-  const warning = listData.filter((ca) => ca.status === "por_vencer").length
-  const inactive = listData.filter((ca) => ca.status === "vencida" || ca.status === "caida").length
+  // Estadísticas (solo dependen de listData)
+  const stats = useMemo(() => {
+    return {
+      total: listData.length,
+      active: listData.filter((ca: CustomerAccount) => ca.status === "activo").length,
+      warning: listData.filter((ca: CustomerAccount) => ca.status === "por_vencer").length,
+      inactive: listData.filter((ca: CustomerAccount) => ca.status === "vencida" || ca.status === "caida").length,
+    }
+  }, [listData])
+
+  const { total, active, warning, inactive } = stats
 
   return (
     <div className="space-y-6">
@@ -245,7 +253,7 @@ export function CustomerAccountsListPage() {
             </div>
           ) : (
             <div className="divide-y divide-border">
-              {filteredCAs.map((ca) => (
+              {filteredCAs.map((ca: CustomerAccount) => (
                 <div key={ca.id} className="grid gap-3 p-4 md:grid-cols-[1fr_180px_100px_100px_auto] md:items-center transition-colors duration-200 hover:bg-muted/30">
                   <div className="flex items-start gap-3">
                     <div className="p-2 rounded-lg bg-primary/10 text-primary">
