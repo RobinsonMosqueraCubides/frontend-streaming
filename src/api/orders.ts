@@ -34,4 +34,7 @@ export const ordersApi = {
 
   delete: (id: number) =>
     api.delete(`/orders/${id}/`),
+
+  sell: (data: { customer_id: number; fecha_inicio: string; observaciones?: string; items: any[] }) =>
+    api.post<Order>("/orders/sell/", data).then((r) => r.data),
 }

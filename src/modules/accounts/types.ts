@@ -1,4 +1,4 @@
-export type AccountStatus = "activo" | "por_vencer" | "vencida" | "caida"
+export type AccountStatus = "disponible" | "no_disponible" | "por_vencer" | "vencida"
 
 export interface Account {
   id: number

@@ -12,6 +12,7 @@ const AccountsListPage = lazy(() => import("@/modules/accounts/pages/AccountsLis
 const ScreensListPage = lazy(() => import("@/modules/screens/pages/ScreensListPage").then(m => ({ default: m.ScreensListPage })))
 const CustomerAccountsListPage = lazy(() => import("@/modules/customer-accounts/pages/CustomerAccountsListPage").then(m => ({ default: m.CustomerAccountsListPage })))
 const OrdersListPage = lazy(() => import("@/modules/orders/pages/OrdersListPage").then(m => ({ default: m.OrdersListPage })))
+const OrderNewPage = lazy(() => import("@/modules/orders/pages/OrderNewPage").then(m => ({ default: m.OrderNewPage })))
 const CustomersListPage = lazy(() => import("@/modules/customers/pages/CustomersListPage").then(m => ({ default: m.CustomersListPage })))
 const ProvidersListPage = lazy(() => import("@/modules/providers/pages/ProvidersListPage").then(m => ({ default: m.ProvidersListPage })))
 const PlatformsListPage = lazy(() => import("@/modules/platforms/pages/PlatformsListPage").then(m => ({ default: m.PlatformsListPage })))
@@ -42,6 +43,7 @@ export default function AppRouter() {
             <Route path={PATHS.screens} element={<ScreensListPage />} />
             <Route path={PATHS.customerAccounts} element={<CustomerAccountsListPage />} />
             <Route path={PATHS.orders} element={<OrdersListPage />} />
+            <Route path={PATHS.orderNew} element={<OrderNewPage />} />
             <Route path={PATHS.customers} element={<CustomersListPage />} />
             <Route path={PATHS.providers} element={<ProvidersListPage />} />
             <Route path={PATHS.platforms} element={<PlatformsListPage />} />

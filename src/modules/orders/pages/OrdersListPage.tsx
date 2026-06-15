@@ -1,7 +1,9 @@
 import { useState, type FormEvent, type TextareaHTMLAttributes } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useNavigate } from "react-router-dom"
 import { ShoppingBag, Pencil, Plus, Trash2, Search, SlidersHorizontal, DollarSign, Clock, CheckCircle2 } from "lucide-react"
 import { toast } from "sonner"
+import { PATHS } from "@/routes/paths"
 import { ordersApi } from "@/api/orders"
 import { customersApi } from "@/api/customers"
 import { Badge } from "@/components/ui/badge"
@@ -29,6 +31,7 @@ function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
 }
 
 export function OrdersListPage() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<Order | null>(null)
@@ -136,7 +139,7 @@ export function OrdersListPage() {
           <h1 className="text-2xl font-bold tracking-tight">Órdenes</h1>
           <p className="text-sm text-muted-foreground">Administración de ventas transaccionales agrupadas de clientes.</p>
         </div>
-        <Button onClick={() => { setEditing(null); setForm(emptyOrder); setOpen(true) }} className="shadow-sm transition-transform duration-200 active:scale-95">
+        <Button onClick={() => navigate(PATHS.orderNew)} className="shadow-sm transition-transform duration-200 active:scale-95">
           <Plus className="h-4 w-4" />
           Nueva orden
         </Button>

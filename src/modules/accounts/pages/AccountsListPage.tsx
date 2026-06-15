@@ -24,7 +24,7 @@ const emptyAccount: Partial<Account> = {
   platform: undefined,
   max_screens: 1,
   credentials: "",
-  status: "activo",
+  status: "disponible",
   purchase_price: undefined,
   fecha_compra: "",
   fecha_pago: "",
@@ -213,9 +213,9 @@ export function AccountsListPage() {
   const stats = useMemo(() => {
     return {
       totalAccounts: listData.length,
-      activeAccounts: listData.filter((a) => a.status === "activo").length,
+      activeAccounts: listData.filter((a) => a.status === "disponible").length,
       warningAccounts: listData.filter((a) => a.status === "por_vencer").length,
-      dangerAccounts: listData.filter((a) => a.status === "vencida" || a.status === "caida").length,
+      dangerAccounts: listData.filter((a) => a.status === "vencida" || a.status === "no_disponible").length,
     }
   }, [listData])
 
@@ -223,12 +223,12 @@ export function AccountsListPage() {
 
   const getStatusBadgeVariant = (status: AccountStatus) => {
     switch (status) {
-      case "activo":
+      case "disponible":
         return "success"
       case "por_vencer":
         return "warning"
       case "vencida":
-      case "caida":
+      case "no_disponible":
         return "destructive"
       default:
         return "secondary"
@@ -330,10 +330,10 @@ export function AccountsListPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los estados</SelectItem>
-                <SelectItem value="activo">Activo</SelectItem>
+                <SelectItem value="disponible">Disponible</SelectItem>
                 <SelectItem value="por_vencer">Por vencer</SelectItem>
                 <SelectItem value="vencida">Vencida</SelectItem>
-                <SelectItem value="caida">Caída</SelectItem>
+                <SelectItem value="no_disponible">No disponible</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -384,7 +384,7 @@ export function AccountsListPage() {
                   </div>
                   <div>
                     <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block lg:hidden">Fecha Corte:</span>
-                    <p className={`text-sm font-medium ${account.status === "vencida" || account.status === "caida" ? "text-destructive font-bold" : "text-muted-foreground"}`}>
+                    <p className={`text-sm font-medium ${account.status === "vencida" || account.status === "no_disponible" ? "text-destructive font-bold" : "text-muted-foreground"}`}>
                       {account.fecha_corte ?? "Sin corte"}
                     </p>
                   </div>
@@ -424,10 +424,10 @@ export function AccountsListPage() {
                 <Select value={form.status} onValueChange={(value) => setForm((current) => ({ ...current, status: value as AccountStatus }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="activo">Activo</SelectItem>
+                    <SelectItem value="disponible">Disponible</SelectItem>
                     <SelectItem value="por_vencer">Por vencer</SelectItem>
                     <SelectItem value="vencida">Vencida</SelectItem>
-                    <SelectItem value="caida">Caída</SelectItem>
+                    <SelectItem value="no_disponible">No disponible</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
