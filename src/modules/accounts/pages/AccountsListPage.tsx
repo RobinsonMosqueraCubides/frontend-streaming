@@ -1,10 +1,11 @@
 import { useState, useMemo, type FormEvent, type TextareaHTMLAttributes } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { KeyRound, Pencil, Plus, Trash2, Search, SlidersHorizontal, AlertCircle, CheckCircle2, RefreshCw } from "lucide-react"
+import { KeyRound, Pencil, Plus, Trash2, Search, SlidersHorizontal, AlertCircle, CheckCircle2, RefreshCw, ShieldAlert } from "lucide-react"
 import { toast } from "sonner"
 import { accountsApi } from "@/api/accounts"
 import { emailsApi } from "@/api/emails"
 import { platformsApi } from "@/api/platforms"
+import { providersApi } from "@/api/providers"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,6 +15,9 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { Account, AccountStatus } from "@/modules/accounts/types"
+
+const today = new Date().toISOString().slice(0, 10)
+
 
 const emptyAccount: Partial<Account> = {
   email: undefined,
@@ -39,6 +43,85 @@ export function AccountsListPage() {
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<Account | null>(null)
   const [form, setForm] = useState<Partial<Account>>(emptyAccount)
+
+  // Garantía Proveedor
+  const [warrantyOpen, setWarrantyOpen] = useState(false)
+  const [warrantyAccount, setWarrantyAccount] = useState<Account | null>(null)
+  const [warrantyForm, setWarrantyForm] = useState({
+    claim_type: "password_change" as "password_change" | "account_replacement" | "store_credit",
+    fecha_reclamo: today,
+    new_credentials: "",
+    new_email_password: "",
+    new_email_address: "",
+    replacement_duration_days: "" as string | number,
+    notes: "",
+  })
+
+  const applyProviderWarranty = useMutation({
+    mutationFn: (payload: any) => providersApi.createWarranty(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["accounts"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] })
+      setWarrantyOpen(false)
+      toast.success("Garantía de proveedor registrada")
+    },
+    onError: (error: any) => {
+      const msg = error.response?.data?.error || "No se pudo registrar la garantía"
+      toast.error(msg)
+    }
+  })
+
+  const startWarranty = (account: Account) => {
+    setWarrantyAccount(account)
+    setWarrantyForm({
+      claim_type: "password_change",
+      fecha_reclamo: today,
+      new_credentials: "",
+      new_email_password: "",
+      new_email_address: "",
+      replacement_duration_days: "",
+      notes: "",
+    })
+    setWarrantyOpen(true)
+  }
+
+  const submitWarranty = (event: FormEvent) => {
+    event.preventDefault()
+    if (!warrantyAccount) return
+
+    const payload: any = {
+      account_id: warrantyAccount.id,
+      claim_type: warrantyForm.claim_type,
+      fecha_reclamo: warrantyForm.fecha_reclamo,
+      notes: warrantyForm.notes,
+    }
+
+    if (warrantyForm.claim_type === "password_change") {
+      if (!warrantyForm.new_credentials) {
+        toast.error("Debe ingresar la nueva contraseña")
+        return
+      }
+      payload.new_credentials = warrantyForm.new_credentials
+      if (warrantyForm.new_email_password) {
+        payload.new_email_password = warrantyForm.new_email_password
+      }
+    } else if (warrantyForm.claim_type === "account_replacement") {
+      if (!warrantyForm.new_credentials || !warrantyForm.new_email_address) {
+        toast.error("Debe ingresar el nuevo correo y contraseña")
+        return
+      }
+      payload.new_credentials = warrantyForm.new_credentials
+      payload.new_email_address = warrantyForm.new_email_address
+      if (warrantyForm.new_email_password) {
+        payload.new_email_password = warrantyForm.new_email_password
+      }
+      if (warrantyForm.replacement_duration_days) {
+        payload.replacement_duration_days = Number(warrantyForm.replacement_duration_days)
+      }
+    }
+
+    applyProviderWarranty.mutate(payload)
+  }
 
   // Filtros
   const [search, setSearch] = useState("")
@@ -306,6 +389,7 @@ export function AccountsListPage() {
                     </p>
                   </div>
                   <div className="flex justify-end gap-2">
+                    <Button variant="outline" size="icon" className="h-8 w-8 hover:bg-amber-500/10 hover:text-amber-500 transition-all duration-200" title="Garantía Proveedor" onClick={() => startWarranty(account)}><ShieldAlert className="h-3.5 w-3.5" /></Button>
                     <Button variant="outline" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary transition-all duration-200" onClick={() => startEdit(account)}><Pencil className="h-3.5 w-3.5" /></Button>
                     <Button variant="outline" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive transition-all duration-200" onClick={() => remove.mutate(account.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
                   </div>
@@ -387,6 +471,200 @@ export function AccountsListPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={warrantyOpen} onOpenChange={setWarrantyOpen}>
+        <DialogContent className="max-w-xl">
+          <form onSubmit={submitWarranty} className="space-y-4">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-base">
+                <ShieldAlert className="h-5 w-5 text-amber-500" />
+                Registrar Garantía de Proveedor
+              </DialogTitle>
+              {warrantyAccount && (
+                <div className="text-xs text-muted-foreground mt-1 bg-muted/50 p-2 rounded">
+                  <span className="font-semibold">Cuenta:</span> {warrantyAccount.platform_name} ({warrantyAccount.email_address})
+                  <br />
+                  <span className="font-semibold">Precio compra:</span> ${warrantyAccount.purchase_price} | <span className="font-semibold">Fecha corte:</span> {warrantyAccount.fecha_corte}
+                </div>
+              )}
+            </DialogHeader>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Tipo de resolución</Label>
+                <Select
+                  value={warrantyForm.claim_type}
+                  onValueChange={(value) =>
+                    setWarrantyForm((current) => ({
+                      ...current,
+                      claim_type: value as any,
+                    }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="password_change">Cambio de contraseña (Mantener cuenta)</SelectItem>
+                    <SelectItem value="account_replacement">Reemplazo de cuenta (Nueva cuenta)</SelectItem>
+                    <SelectItem value="store_credit">Saldo a favor proporcional</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Fecha de reclamo</Label>
+                <Input
+                  type="date"
+                  value={warrantyForm.fecha_reclamo}
+                  onChange={(e) =>
+                    setWarrantyForm((current) => ({
+                      ...current,
+                      fecha_reclamo: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              {warrantyForm.claim_type === "store_credit" && warrantyAccount && (
+                <div className="space-y-2 border border-dashed rounded-lg p-3 bg-muted/20 flex flex-col justify-center">
+                  <span className="text-xs text-muted-foreground">Saldo a favor estimado:</span>
+                  {(() => {
+                    const price = Number(warrantyAccount.purchase_price) || 0
+                    const corte = new Date(warrantyAccount.fecha_corte + "T00:00:00")
+                    const reclamo = new Date(warrantyForm.fecha_reclamo + "T00:00:00")
+                    const diffTime = corte.getTime() - reclamo.getTime()
+                    const diffDays = Math.max(0, Math.min(30, Math.ceil(diffTime / (1000 * 60 * 60 * 24))))
+                    const credit = (price / 30) * diffDays
+                    return (
+                      <span className="font-bold text-success text-lg">
+                        ${credit.toFixed(2)} <span className="text-xs text-muted-foreground">({diffDays} días faltantes)</span>
+                      </span>
+                    )
+                  })()}
+                </div>
+              )}
+
+              {warrantyForm.claim_type === "password_change" && (
+                <>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label>Nueva contraseña de la cuenta de streaming</Label>
+                    <Input
+                      value={warrantyForm.new_credentials}
+                      onChange={(e) =>
+                        setWarrantyForm((current) => ({
+                          ...current,
+                          new_credentials: e.target.value,
+                        }))
+                      }
+                      placeholder="Ingrese las nuevas credenciales de acceso"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label>Nueva contraseña del correo asociado (Opcional)</Label>
+                    <Input
+                      value={warrantyForm.new_email_password}
+                      onChange={(e) =>
+                        setWarrantyForm((current) => ({
+                          ...current,
+                          new_email_password: e.target.value,
+                        }))
+                      }
+                      placeholder="Por si el proveedor también cambió la clave del correo"
+                    />
+                  </div>
+                </>
+              )}
+
+              {warrantyForm.claim_type === "account_replacement" && (
+                <>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label>Nuevo Correo Electrónico</Label>
+                    <Input
+                      type="email"
+                      value={warrantyForm.new_email_address}
+                      onChange={(e) =>
+                        setWarrantyForm((current) => ({
+                          ...current,
+                          new_email_address: e.target.value,
+                        }))
+                      }
+                      placeholder="ejemplo@correo.com"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Nueva Contraseña Correo</Label>
+                    <Input
+                      value={warrantyForm.new_email_password}
+                      onChange={(e) =>
+                        setWarrantyForm((current) => ({
+                          ...current,
+                          new_email_password: e.target.value,
+                        }))
+                      }
+                      placeholder="Clave del correo"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Nueva Contraseña de Streaming</Label>
+                    <Input
+                      value={warrantyForm.new_credentials}
+                      onChange={(e) =>
+                        setWarrantyForm((current) => ({
+                          ...current,
+                          new_credentials: e.target.value,
+                        }))
+                      }
+                      placeholder="Clave del servicio"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label>Días de vigencia del reemplazo (Vacio = días restantes)</Label>
+                    <Input
+                      type="number"
+                      value={warrantyForm.replacement_duration_days}
+                      onChange={(e) =>
+                        setWarrantyForm((current) => ({
+                          ...current,
+                          replacement_duration_days: e.target.value,
+                        }))
+                      }
+                      placeholder="Cantidad de días"
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Observaciones / Notas del reclamo</Label>
+                <TextArea
+                  value={warrantyForm.notes}
+                  onChange={(e) =>
+                    setWarrantyForm((current) => ({
+                      ...current,
+                      notes: e.target.value,
+                    }))
+                  }
+                  placeholder="Detalles sobre la falla o acuerdo con el proveedor..."
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setWarrantyOpen(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={applyProviderWarranty.isPending} className="bg-amber-600 hover:bg-amber-700 text-white">
+                Aplicar Garantía
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
+

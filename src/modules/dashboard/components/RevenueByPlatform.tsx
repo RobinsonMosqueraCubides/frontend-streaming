@@ -4,8 +4,8 @@ import { useIngresosPlataforma } from "../hooks/use-dashboard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PriceDisplay } from "@/components/price-display"
 
-export function RevenueByPlatform() {
-  const { data, isLoading } = useIngresosPlataforma()
+export function RevenueByPlatform({ rango }: { rango?: string }) {
+  const { data, isLoading } = useIngresosPlataforma(rango)
 
   if (isLoading) {
     return (

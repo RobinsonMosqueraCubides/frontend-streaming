@@ -1,50 +1,50 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { dashboardApi } from "@/api/dashboard"
 
-export function useDashboardResumen() {
+export function useDashboardResumen(rango?: string) {
   return useQuery({
-    queryKey: ["dashboard", "resumen"],
-    queryFn: dashboardApi.resumen,
+    queryKey: ["dashboard", "resumen", rango],
+    queryFn: () => dashboardApi.resumen({ rango }),
     refetchInterval: 30_000,
   })
 }
 
-export function useIngresosPlataforma() {
+export function useIngresosPlataforma(rango?: string) {
   return useQuery({
-    queryKey: ["dashboard", "ingresos", "plataforma"],
-    queryFn: dashboardApi.ingresosPlataforma,
+    queryKey: ["dashboard", "ingresos", "plataforma", rango],
+    queryFn: () => dashboardApi.ingresosPlataforma({ rango }),
     staleTime: 1000 * 60 * 2,
   })
 }
 
-export function useIngresosProveedor() {
+export function useIngresosProveedor(rango?: string) {
   return useQuery({
-    queryKey: ["dashboard", "ingresos", "proveedor"],
-    queryFn: dashboardApi.ingresosProveedor,
+    queryKey: ["dashboard", "ingresos", "proveedor", rango],
+    queryFn: () => dashboardApi.ingresosProveedor({ rango }),
     staleTime: 1000 * 60 * 2,
   })
 }
 
-export function useIngresosCliente() {
+export function useIngresosCliente(rango?: string) {
   return useQuery({
-    queryKey: ["dashboard", "ingresos", "cliente"],
-    queryFn: dashboardApi.ingresosCliente,
+    queryKey: ["dashboard", "ingresos", "cliente", rango],
+    queryFn: () => dashboardApi.ingresosCliente({ rango }),
     staleTime: 1000 * 60 * 2,
   })
 }
 
-export function useEgresosProveedor() {
+export function useEgresosProveedor(rango?: string) {
   return useQuery({
-    queryKey: ["dashboard", "egresos", "proveedor"],
-    queryFn: dashboardApi.egresosProveedor,
+    queryKey: ["dashboard", "egresos", "proveedor", rango],
+    queryFn: () => dashboardApi.egresosProveedor({ rango }),
     staleTime: 1000 * 60 * 2,
   })
 }
 
-export function useEgresosPlataforma() {
+export function useEgresosPlataforma(rango?: string) {
   return useQuery({
-    queryKey: ["dashboard", "egresos", "plataforma"],
-    queryFn: dashboardApi.egresosPlataforma,
+    queryKey: ["dashboard", "egresos", "plataforma", rango],
+    queryFn: () => dashboardApi.egresosPlataforma({ rango }),
     staleTime: 1000 * 60 * 2,
   })
 }

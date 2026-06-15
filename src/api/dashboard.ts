@@ -109,23 +109,23 @@ export type Cobro = Vencimiento & {
 // ─── API functions ───────────────────────────────
 
 export const dashboardApi = {
-  resumen: () =>
-    api.get<DashboardResumen>("/dashboard/resumen/").then((r) => r.data),
+  resumen: (params?: { rango?: string }) =>
+    api.get<DashboardResumen>("/dashboard/resumen/", { params }).then((r) => r.data),
 
-  ingresosPlataforma: () =>
-    api.get<IngresoPorPlataforma[]>("/dashboard/ingresos/plataforma/").then((r) => r.data),
+  ingresosPlataforma: (params?: { rango?: string }) =>
+    api.get<IngresoPorPlataforma[]>("/dashboard/ingresos/plataforma/", { params }).then((r) => r.data),
 
-  ingresosProveedor: () =>
-    api.get<IngresoPorProveedor[]>("/dashboard/ingresos/proveedor/").then((r) => r.data),
+  ingresosProveedor: (params?: { rango?: string }) =>
+    api.get<IngresoPorProveedor[]>("/dashboard/ingresos/proveedor/", { params }).then((r) => r.data),
 
-  ingresosCliente: () =>
-    api.get<IngresoPorCliente[]>("/dashboard/ingresos/cliente/").then((r) => r.data),
+  ingresosCliente: (params?: { rango?: string }) =>
+    api.get<IngresoPorCliente[]>("/dashboard/ingresos/cliente/", { params }).then((r) => r.data),
 
-  egresosProveedor: () =>
-    api.get<EgresoPorProveedor[]>("/dashboard/egresos/proveedor/").then((r) => r.data),
+  egresosProveedor: (params?: { rango?: string }) =>
+    api.get<EgresoPorProveedor[]>("/dashboard/egresos/proveedor/", { params }).then((r) => r.data),
 
-  egresosPlataforma: () =>
-    api.get<EgresoPorPlataforma[]>("/dashboard/egresos/plataforma/").then((r) => r.data),
+  egresosPlataforma: (params?: { rango?: string }) =>
+    api.get<EgresoPorPlataforma[]>("/dashboard/egresos/plataforma/", { params }).then((r) => r.data),
 
   vencimientos: (params?: { status?: string; fecha_desde?: string; fecha_hasta?: string }) =>
     api.get<Vencimiento[]>("/dashboard/vencimientos/", { params }).then((r) => r.data),

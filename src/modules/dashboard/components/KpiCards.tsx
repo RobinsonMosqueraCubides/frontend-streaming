@@ -12,8 +12,8 @@ function formatCOP(value: number | string): string {
   }).format(num)
 }
 
-export function KpiCards() {
-  const { data, isLoading } = useDashboardResumen()
+export function KpiCards({ rango }: { rango?: string }) {
+  const { data, isLoading } = useDashboardResumen(rango)
 
   if (isLoading) {
     return (

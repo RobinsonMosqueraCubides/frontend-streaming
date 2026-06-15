@@ -1,5 +1,4 @@
-import { useMemo } from 'react'
-import { useDashboardResumen } from "../hooks/use-dashboard"
+import { useMemo, useState } from 'react'
 import { KpiCards } from "../components/KpiCards"
 import { RevenueByPlatform } from "../components/RevenueByPlatform"
 import { InventorySummary } from "../components/InventorySummary"
@@ -8,10 +7,17 @@ import { ExpiringSoon } from "../components/ExpiringSoon"
 import { InactiveClients } from "../components/InactiveClients"
 import { useAccounts } from "@/modules/accounts/hooks/use-accounts"
 import { useScreens } from "@/modules/screens/hooks/use-screens"
-import { Zap } from "lucide-react"
+import { Zap, Calendar } from "lucide-react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export function DashboardPage() {
-  useDashboardResumen()
+  const [rango, setRango] = useState<string>("historico")
   const { data: accounts } = useAccounts()
   const { data: screens } = useScreens()
 
@@ -34,8 +40,8 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Purple gradient header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-primary-soft to-primary-muted p-6 shadow-lg">
+      {/* Solid header */}
+      <div className="relative overflow-hidden rounded-2xl bg-primary p-6 shadow-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
         <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
         <div className="relative flex items-center gap-3">
@@ -49,14 +55,29 @@ export function DashboardPage() {
             </p>
           </div>
         </div>
+
+        {/* Date Filter Dropdown */}
+        <div className="relative shrink-0 w-[200px] z-10">
+          <Select value={rango} onValueChange={setRango}>
+            <SelectTrigger className="bg-white border-none text-primary shadow-md hover:bg-white/90 font-medium transition-colors">
+              <Calendar className="h-4 w-4 mr-2 text-primary" />
+              <SelectValue placeholder="Rango de fecha" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="historico">Histórico completo</SelectItem>
+              <SelectItem value="mes_actual">Mes actual</SelectItem>
+              <SelectItem value="ultimos_3_meses">Últimos 3 meses</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* KPI Cards */}
-      <KpiCards />
+      <KpiCards rango={rango} />
 
       {/* Row 1: Revenue + Inventory */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <RevenueByPlatform />
+        <RevenueByPlatform rango={rango} />
         <InventorySummary />
       </div>
 
@@ -74,3 +95,4 @@ export function DashboardPage() {
     </div>
   )
 }
+
